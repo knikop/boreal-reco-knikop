@@ -1,0 +1,7 @@
+pandas>=2.0
+numpy
+mlxtend>=0.23
+streamlit>=1.30
+psutil
+matplotlib
+jupyter
