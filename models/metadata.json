@@ -5,7 +5,7 @@
   "min_confidence": 0.1,
   "min_lift": 1.2,
   "rule_filter": "lift > min_lift, single-item consequent",
-  "mined_on": "2026-11-03",
+  "mined_on": "2026-11-04",
   "data_period": "2026-01-01 to 2026-12-31",
   "n_baskets": 1000000,
   "n_products": 98,
