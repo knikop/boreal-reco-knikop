@@ -1,0 +1,5 @@
+min_support,outcome,seconds
+0.05,OK: 191 itemsets,64.4
+0.02,OK: 658 itemsets,210.3
+0.01,"MemoryError: Unable to allocate 14.2 GiB for an array with shape (5099, 3, 1000000) and data type bool",132.7
+0.005,"MemoryError: Unable to allocate 72.6 GiB for an array with shape (25975, 3, 1000000) and data type bool",161.7
