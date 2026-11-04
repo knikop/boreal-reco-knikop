@@ -136,6 +136,6 @@ with reco_col:
                 m3.metric('Lift', f"{r['lift']:.2f}")
 
     # Recommendation Explanation
-    X = ', '.join(sorted(r['antecedents']))
-    st.write(f"Because your basket contains {X}, customers who buy that also buy {c} "
-         f"{r['confidence']:.0%} of the time — that is {r['lift']:.1f}× more often than average.")
+    # X = ', '.join(sorted(r['antecedents']))
+    # st.write(f"Because your basket contains {X}, customers who buy that also buy {c} "
+    #     f"{r['confidence']:.0%} of the time — that is {r['lift']:.1f}× more often than average.")
