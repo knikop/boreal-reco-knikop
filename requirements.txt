@@ -1,7 +1,8 @@
-pandas>=2.0
-numpy
-mlxtend>=0.23
-streamlit>=1.30
-psutil
+# Python 3.12
+pandas==3.1.0
+numpy==2.5.4
+mlxtend==0.25.0
 matplotlib
+streamlit>=1.40
 jupyter
+ipykernel
