@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-ROOT = Path(__file__).resolve().parents[1]      # works whatever folder you launch from
+ROOT = Path(__file__).resolve().parents[1]      # works from whatever folder you launch from
 
 @st.cache_data
 def load():
@@ -42,7 +42,7 @@ def popular(basket, meta, k=5, exclude=('Sac réutilisable',)):
 # Check if page opens and if caption shows rule count
 rules, meta, products = load()
 st.set_page_config(page_title='Boréal Marché', layout='wide')
-st.title('Boréal Marché — recommendations')
+st.title('Boréal Marché — Recommendation Engine')
 st.caption(f"{meta['n_rules']} rules mined on {meta['mined_on']} · min_support {meta['min_support']} · coverage {meta['coverage']}/98")
 
 
