@@ -44,6 +44,14 @@ Tested with Python 3.12.16, pandas 3.1.0, numpy 2.5.4, mlxtend 0.25.0.
 
 ```bash
 git clone https://github.com/knikop/boreal-reco-knikop.git
+python -m venv .venv
+pip install -r requirements.txt
+```
+
+or
+
+```bash
+git clone https://github.com/knikop/boreal-reco-knikop.git
 cd boreal-reco-knikop
 
 conda create -n boreal python=3.12
