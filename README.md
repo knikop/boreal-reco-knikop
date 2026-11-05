@@ -64,14 +64,44 @@ The app only reads `models/rules.json`, `models/metadata.json` and `data/product
 
 ## Results
 
+| | |
+| --- | --- |
+| Baskets / products / items per basket | 1,000,000 / 98 / 8.38 |
+| Wide table build | 1.04 s, 106 MB (`crosstab`: 63.4 s) |
+| Final thresholds | min_support 0.01 · min_confidence 0.1 · lift > 1.2 · single-item consequent |
+| Mining time at 0.01 | 18.3 s, 0.18 GB peak (`low_memory=True`) |
+| Rules mined → saved | 13,731 → **2,894** |
+| Coverage | **57 of 98 products** can ever be recommended |
+
+**Confidence vs lift (the key finding).** Ranked by confidence, all top 10 rules (and 100% of the top 50) are "X → Sac réutilisable", with confidence 0.90 but lift 1.00. The reusable bag is in 90% of baskets, so it shows up after anything, and these rules carry no information. Ranked by lift, the top rules are real meal bundles: raclette (Fromage à raclette ↔ Bouillon à fondue, lift 10.2), sushi (Algues nori ↔ Riz à sushi, 9.5) and baby care (Couches ↔ Lingettes pour bébé, 9.5). The app therefore ranks suggestions by lift. My Phase 1 prediction that the bag would flood the high-confidence rules was correct.
+
+**Seasonality.** Summer and winter produce different rule sets: 27,871 vs 9,446 rules, with only 6,413 in both. BBQ rules (Saucisses → Sauce BBQ, lift 3.3) exist only in summer, and raclette rules (Fromage à raclette → Bouillon à fondue, lift 6.8) only in winter. 6,394 of the 13,731 year-round rules (47%) don't exist in January data. Mining takes 18 s, so I recommend re-mining at least monthly, or keeping one rule set per season. Details are in the notebook, Phase 4.
+
+Full measurements are in [`reports/benchmark.md`](reports/benchmark.md).
+
 
 ## Decisions
 
 
 ## Traps I hit
 
+The honest list of what went wrong and how I found it.
+
+1. **MemoryError and a frozen PC.** Apriori with default settings needed 7.97 GiB at 0.02, 14.2 GiB at 0.01 and 72.6 GiB at 0.005. At 0.02 it failed once and succeeded once, after Windows swapped to disk for 3.5 minutes. The fix was `low_memory=True` (explained in `benchmark.md`). I then put the test behind a flag so *Restart & Run All* doesn't freeze the machine, and the recorded results are shown instead.
+2. **Phase 3 ran on the wrong rules.** The benchmark loop leaves `rules` holding the *last* run (0.005, 41,952 rules), so my first Phase 3 results used the wrong threshold. The bag count came out as 12,309. I added an explicit re-mining cell at 0.01 before Phase 3.
+3. **The bag survived `lift > 1`.** I expected the lift filter to remove the bag rules, but their lift sits just around 1 (0.992–1.009), and 586 of them passed. I raised the cut-off to 1.2.
+4. **Counting the bag rules wrongly.** Testing `'Sac réutilisable' in consequents` also matched rules like "X → bag + Steak", whose high lift comes from the steak, and gave about 4,000. The correct test is `consequents == {'Sac réutilisable'}`, which gives 1,017.
+5. **Missing output.** `freq.head(10); freq.tail(5)` only showed the bottom 5, because Jupyter displays only a cell's last expression. Fixed with `display()`.
+6. **Wrong import.** `import association_rules` raised `ModuleNotFoundError`. It comes from `mlxtend.frequent_patterns`. All imports are now in the notebook's first cell.
+7. **Date alignment risk in Phase 4.** Joining dates to a table with a plain 0…N index gives wrong months without any error. The basket table is indexed by `TransactionID`, and an `assert` checks that every basket gets a month.
+
 
 ## Edge Cases
+
+All five graded edge cases were tested in the running app.
+
+| Situation | Expected behaviour | Result | Screenshot |
+| --- | --- | --- | --- |
 
 
 ## Limitations
