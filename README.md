@@ -82,6 +82,19 @@ Full measurements are in [`reports/benchmark.md`](reports/benchmark.md).
 
 ## Decisions
 
+| Decision | Choice | Why |
+| --- | --- | --- |
+| Wide-format method | `pd.factorize` + NumPy bool array | 61× faster than `crosstab` and 1 byte per cell |
+| Apriori setting | `low_memory=True` | the default raises a MemoryError from min_support 0.01 (14.2 GiB needed) |
+| min_support | 0.01 | 13,731 rules in 18 s, itemsets up to 7 items; 0.005 triples the rules with no gain in coverage |
+| Lift filter | lift > 1.2 instead of lift > 1 | lift > 1 still kept 586 of 1,017 bag rules (lift 0.992–1.009); 1.2 removes them all, and every real bundle is above 3 |
+| Consequent size | one item only | one rule = one suggestion; `A → B + C` is already covered by `A → B` and `A → C` |
+| Duplicate product | **kept Baguette and Pain baguette rustique separate** | Baguette is flat all year with no strong partner; the rustic baguette is seasonal and part of the raclette bundle (lift 9.55). Their mutual lift is 1.03, and merging would drop the raclette lift to 4.09. |
+| Ranking | descending lift, best rule per product | rewards suggestions that change behaviour, not popular items |
+| Strength label | weak < 1.5 ≤ moderate < 3 ≤ strong < 6 ≤ very strong | thresholds on lift; every rule in the app is at least 1.2 |
+| Fallback | 5 most popular products, excluding the bag | used when the basket is empty or no rule fires |
+| `products.csv` columns | joined on `Item` (French name) | the brief lists `Item, Item_FR`, but the file actually has `Item` (French) and `Item_EN`; the transactions use the French names |
+
 
 ## Traps I hit
 
@@ -110,6 +123,7 @@ All five graded edge cases were tested in the running app.
 2. **No notion of time.** One rule set covers the whole year, but 47% of year-round rules don't exist in January data. *Fix:* one rule set per season, switched by date, plus monthly re-mining (18 s per run).
 3. **Not personalised.** Two customers with the same basket get the same suggestions, even though `CustomerID` is in the data. *Fix:* use purchase history (customer-level collaborative filtering).
 4. **Cold start.** An empty basket can only show best-sellers, which reinforces popularity.
+
 
 ## Ethics
 
