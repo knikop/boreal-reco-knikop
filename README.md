@@ -115,6 +115,22 @@ All five graded edge cases were tested in the running app.
 
 | Situation | Expected behaviour | Result | Screenshot |
 | --- | --- | --- | --- |
+| Empty basket | Clear message + fallback to popular products | "Your basket is empty, so no rule can fire." + top 5 products (bag excluded) | ![](screenshots/01_empty.png) |
+| No rule fires | Explicit message + fallback | Basket = Lait 2% → "No rule matches this basket." + popular products | ![](screenshots/02_no_rule.png) |
+| Item already in basket | Never suggested again | Charbon de bois → Steak is the top suggestion; after adding Steak it disappears from the list | ![](screenshots/03_already_in_before.png)![](screenshots/03_already_in_after.png) |
+| Two rules suggest the same item | Keep the higher-lift one | Charbon de bois + Ketchup: three rules suggest Steak de boeuf (lift 6.83, 6.21, 5.84); it appears once, from the 6.83 rule(strongest rule is kept) "Charbon de bois + Ketchup → Steak" | ![](screenshots/04_duplicate.png) |
+| Very rare product | Explain why it is in no rule | Basket = Caviar → "Caviar appears in only 0.08% of baskets, below the 1% mining threshold, so it is in no rule…" | ![](screenshots/05_rare.png) |
+
+Example recommendations:
+
+- **Charbon de bois** → Steak de boeuf, Pain à hamburger, Ketchup, Saucisses, Sauce BBQ
+- **Fromage à raclette + Charcuteries + Bouillon à fondue** → Cornichons, Pain baguette rustique, Vin blanc, Pommes de terre
+
+#### Recommendation for raclette basket
+![Recommendations for a raclette basket](screenshots/06_raclette.png)
+
+#### Recommendation for charbon de bois
+![Recommendations for charbon de bois](screenshots/07_charbon.png)
 
 
 ## Limitations
