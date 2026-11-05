@@ -104,14 +104,16 @@ with reco_col:
         st.warning('Your basket is empty, so no rule can fire. Showing popular products instead.')
     elif not recs:                                        # edge case: no rule fires
         st.warning('No rule matches this basket. Showing popular products instead.')
-
-    if recs:                                              # Recommendation cards
+    
+    # Recommendation cards
+    if recs:                                              
         for r in recs:
             c = r['consequent']; p = products.loc[c]
             X = ', '.join(sorted(r['antecedents']))
             with st.container(border=True):
                 st.subheader(f'{c} · {p.Price:.2f} $')
                 st.caption(f"{p.Category} · {strength(r['lift'])}")
+                # Plain text recommendation of products
                 st.write(f"Because your basket contains {X}, customers who buy that also buy {c} "
                          f"{r['confidence']:.0%} of the time — that is {r['lift']:.1f}× more often than average.")
                 m1, m2, m3 = st.columns(3)
@@ -119,11 +121,25 @@ with reco_col:
                 m2.metric('Confidence', f"{r['confidence']:.0%}")
                 m3.metric('Lift', f"{r['lift']:.2f}")
 
+                others = [x for x in rules if x['consequent'] == c
+                          and x['antecedents'] <= set(basket) and x is not r]
+                if others:                                # edge case: two rules, same item
+                    dropped = ', '.join(f"{x['lift']:.2f}" for x in sorted(others, key=lambda x: -x['lift']))
+                    st.caption(f"{len(others) + 1} rules suggest {c}. Kept the strongest (lift {r['lift']:.2f}); "
+                               f"not shown: lift {dropped}.")
+
         # Rules that fired
         with st.expander('Rules that fired'):
-            st.dataframe(pd.DataFrame([{'If': ', '.join(sorted(r['antecedents'])), 'Then': r['consequent'],
-                                        'Support': r['support'], 'Confidence': r['confidence'],
-                                        'Lift': r['lift']} for r in recs]), hide_index=True)
+            shown = {id(r) for r in recs}
+            fired = [x for x in rules if x['antecedents'] <= set(basket) and x['consequent'] not in basket]
+            fired.sort(key=lambda x: (x['consequent'], -x['lift']))
+            st.dataframe(pd.DataFrame([{'If': ', '.join(sorted(x['antecedents'])), 'Then': x['consequent'],
+                                        'Support': x['support'], 'Confidence': x['confidence'],
+                                        'Lift': x['lift'],
+                                        'Used': 'yes' if id(x) in shown else 'no (lower lift or not in top 5)'}
+                                       for x in fired]), hide_index=True)
+    
+    # Popular products when basket empty or when no rules match
     else:                                                 
         st.subheader('Popular products')
         for item in popular(basket, meta):
