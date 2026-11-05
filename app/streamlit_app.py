@@ -105,23 +105,7 @@ with reco_col:
     elif not recs:                                        # edge case: no rule fires
         st.warning('No rule matches this basket. Showing popular products instead.')
 
-    # Recommendation cards
-    if recs:
-        for r in recs:
-            c = r['consequent']; p = products.loc[c]
-            X = ', '.join(sorted(r['antecedents']))
-            with st.container(border=True):
-                st.subheader(f'{c} · {p.Price:.2f} $')
-                st.caption(f"{p.Category} · {strength(r['lift'])}")
-                st.write(f"Because your basket contains {X}, customers who buy that also buy {c} "
-                         f"{r['confidence']:.0%} of the time — that is {r['lift']:.1f}× more often than average.")
-                m1, m2, m3 = st.columns(3)
-                m1.metric('Support', f"{r['support']:.2%}")
-                m2.metric('Confidence', f"{r['confidence']:.0%}")
-                m3.metric('Lift', f"{r['lift']:.2f}")
-    
-    # Rules that "fired" and fallback list
-    if recs:
+    if recs:                                              # Recommendation cards
         for r in recs:
             c = r['consequent']; p = products.loc[c]
             X = ', '.join(sorted(r['antecedents']))
@@ -135,7 +119,13 @@ with reco_col:
                 m2.metric('Confidence', f"{r['confidence']:.0%}")
                 m3.metric('Lift', f"{r['lift']:.2f}")
 
-    # Recommendation Explanation
-    # X = ', '.join(sorted(r['antecedents']))
-    # st.write(f"Because your basket contains {X}, customers who buy that also buy {c} "
-    #     f"{r['confidence']:.0%} of the time — that is {r['lift']:.1f}× more often than average.")
+        # Rules that fired
+        with st.expander('Rules that fired'):
+            st.dataframe(pd.DataFrame([{'If': ', '.join(sorted(r['antecedents'])), 'Then': r['consequent'],
+                                        'Support': r['support'], 'Confidence': r['confidence'],
+                                        'Lift': r['lift']} for r in recs]), hide_index=True)
+    else:                                                 
+        st.subheader('Popular products')
+        for item in popular(basket, meta):
+            p = products.loc[item]
+            st.write(f"**{item}** · {p.Category} · {p.Price:.2f} $ — in {meta['item_support'][item]:.0%} of baskets")

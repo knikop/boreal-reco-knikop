@@ -55,8 +55,8 @@ pip install -r requirements.txt
 
 **2. Start the app** from the repository root:
 
-```bash
-streamlit run app/streamlit_app.py
+```powershell
+python -m streamlit run app/streamlit_app.py
 ```
 
 The app only reads `models/rules.json`, `models/metadata.json` and `data/products.csv`. It does not import mlxtend.
