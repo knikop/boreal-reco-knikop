@@ -4,7 +4,7 @@ All measurements come from `notebooks/01_mining.ipynb`, run on my machine.
 
 | | |
 | --- | --- |
-| Machine | _CPU model · 16GB RAM · Windows 10 version 22H2_ |
+| Machine | _Intel(R) Core(TM) i7-8700 CPU · 16GB RAM · Windows 10 version 22H2_ |
 | Environment | conda env `Boreal-New` · Python 3.12.16 · pandas 3.1.0 · numpy 2.5.4 · mlxtend 0.25.0 |
 | Data | 8,379,837 rows · 1,000,000 baskets · 98 products · 8.38 items per basket |
 
