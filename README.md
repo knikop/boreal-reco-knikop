@@ -35,7 +35,7 @@ boreal-reco-knikop/
 │   ├── benchmark.md             ← timing and memory measurements
 │   ├── apriori_default_runs.csv
 │   └── apriori_lowmem_runs.csv
-└── docs/screenshots/            ← app screenshots used below
+└── screenshots/            ← app screenshots used below
 ```
 
 ## How to run 
